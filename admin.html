@@ -83,7 +83,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:12px;padding
     <button class="g big" id="createBtn">إنشاء الكود</button>
     <div id="created" style="display:none">
       <div class="msgbox" id="msgText"></div>
-      <div class="acts"><button class="g" id="copyMsg">📋 نسخ الرسالة</button><a id="waLink" target="_blank" rel="noopener"><button class="wa">واتساب</button></a></div>
+      <div class="acts"><button class="g" id="copyMsg">📋 نسخ الرسالة</button><button class="wa" id="waBtn">📲 إرسال واتساب</button></div>
     </div>
   </div>
 
@@ -160,7 +160,11 @@ ${APP_URL}
 الكود خاص بك، يرجى عدم مشاركته 🙏
 بصمة إبداع`}
 function showMsg(l){const m=message(l);$("#msgText").textContent=m;$("#created").style.display="block";
-  const ph=(l.phone||"").replace(/\D/g,"");$("#waLink").href=`https://wa.me/${ph?(ph.length===8?"968"+ph:ph):""}?text=${encodeURIComponent(m)}`}
+  CUR_WA=waUrl(l.phone,m)}
+let CUR_WA="";
+function waUrl(phone,m){let ph=String(phone||"").replace(/\D/g,"");if(ph.startsWith("00"))ph=ph.slice(2);if(ph.length===8)ph="968"+ph;
+  return `https://wa.me/${ph}?text=${encodeURIComponent(m)}`}
+$("#waBtn").onclick=()=>{if(!CUR_WA)return;const w=window.open(CUR_WA,"_blank");if(!w)location.href=CUR_WA};
 $("#copyMsg").onclick=async()=>{try{await navigator.clipboard.writeText($("#msgText").textContent);toast("تم النسخ ✅")}catch(e){toast("انسخ النص يدويًا")}};
 $("#createBtn").onclick=async()=>{
   const name=$("#n_name").value.trim();if(!name){toast("اكتب اسم المعلمة");return}
