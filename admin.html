@@ -20,6 +20,7 @@ header img{width:44px}
 label{font-weight:700;font-size:14px;color:#6b4b4b;display:block;margin-bottom:4px}
 input,select,textarea{width:100%;padding:10px 12px;border:2px solid #eadfce;border-radius:12px;font-family:inherit;font-size:16px}
 button{font-family:inherit;cursor:pointer;border:none;border-radius:12px;padding:10px 16px;font-weight:800;font-size:15px;background:#f3ebe0;color:#2b1d1d}
+.btnlink{display:inline-block;text-decoration:none;border-radius:12px;padding:10px 16px;font-weight:800;font-size:15px}
 .g{background:#0f8a3c;color:#fff}.r{background:#d6202f;color:#fff}.wa{background:#25d366;color:#fff}
 .big{width:100%;margin-top:12px;padding:14px;font-size:18px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
@@ -83,7 +84,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:12px;padding
     <button class="g big" id="createBtn">إنشاء الكود</button>
     <div id="created" style="display:none">
       <div class="msgbox" id="msgText"></div>
-      <div class="acts"><button class="g" id="copyMsg">📋 نسخ الرسالة</button><button class="wa" id="waBtn">📲 إرسال واتساب</button></div>
+      <div class="acts"><button class="g" id="copyMsg">📋 نسخ الرسالة</button><a class="wa btnlink" id="waLink" href="#" target="_blank" rel="noopener">📲 إرسال واتساب</a><a class="btnlink" id="waApp" href="#" style="background:#e7f8ee;color:#0a6a2d">فتح تطبيق واتساب مباشرة</a></div>
     </div>
   </div>
 
@@ -160,11 +161,10 @@ ${APP_URL}
 الكود خاص بك، يرجى عدم مشاركته 🙏
 بصمة إبداع`}
 function showMsg(l){const m=message(l);$("#msgText").textContent=m;$("#created").style.display="block";
-  CUR_WA=waUrl(l.phone,m)}
-let CUR_WA="";
-function waUrl(phone,m){let ph=String(phone||"").replace(/\D/g,"");if(ph.startsWith("00"))ph=ph.slice(2);if(ph.length===8)ph="968"+ph;
-  return `https://wa.me/${ph}?text=${encodeURIComponent(m)}`}
-$("#waBtn").onclick=()=>{if(!CUR_WA)return;const w=window.open(CUR_WA,"_blank");if(!w)location.href=CUR_WA};
+  const w=waUrls(l.phone,m);$("#waLink").href=w.web;$("#waApp").href=w.app}
+function waUrls(phone,m){let ph=String(phone||"").replace(/\D/g,"");if(ph.startsWith("00"))ph=ph.slice(2);if(ph.length===8)ph="968"+ph;
+  const t=encodeURIComponent(m),q=(ph?`phone=${ph}&`:"")+`text=${t}`;
+  return {web:`https://api.whatsapp.com/send?${q}`,app:`whatsapp://send?${q}`}}
 $("#copyMsg").onclick=async()=>{try{await navigator.clipboard.writeText($("#msgText").textContent);toast("تم النسخ ✅")}catch(e){toast("انسخ النص يدويًا")}};
 $("#createBtn").onclick=async()=>{
   const name=$("#n_name").value.trim();if(!name){toast("اكتب اسم المعلمة");return}
